@@ -1,0 +1,59 @@
+digraph PrivaRAG_Architecture {
+  graph [fontname="Helvetica", dpi=110, pad="0.25", nodesep="0.6", ranksep="0.7", splines=ortho, compound=true];
+  rankdir=TB;
+  fontsize=10;
+
+  node [shape=rect, fontsize=10, fontname="Helvetica", style="filled,rounded", color="#90A4AE", fillcolor="white"];
+  edge [color="#78909C", arrowsize=0.8, penwidth=1.2];
+
+  /* ===================== On-Device (PrivaRAG-Agent) ===================== */
+  subgraph cluster_device {
+    label="On-Device (PrivaRAG-Agent)"; labelloc="t";
+    style="rounded,dashed"; color="#B0BEC5"; fontname="Helvetica";
+
+    DRAFT     [label="User Draft Post", fillcolor="#F3E5F5", color="#8E24AA"];
+    CONTENT   [label="Content Analyzer\n(PII NER • Topics • Embedding)", fillcolor="#E1F5FE", color="#0288D1"];
+    PKG       [label="Privacy Knowledge Graph (PKG)", shape=cylinder, fillcolor="#FFF8E1", color="#F9A825"];
+    RET       [label="Retrieval (FAISS top-k)", fillcolor="#E3F2FD", color="#1E88E5"];
+    DEC       [label="Decision Module\nf_θ: Post Privacy Classifier\ng_φ: Friend Inclusion Model", fillcolor="#E8F5E9", color="#43A047"];
+    LLM       [label="Justification Generator\nLLM (RAG prompts)", fillcolor="#FFFDE7", color="#F9A825"];
+    UI        [label="User Interface\nSuggested Audience + Explanation", fillcolor="#FFEBEE", color="#C62828"];
+    TRAIN     [label="Learning Agent\n(Local training with DP-SGD)", fillcolor="#F1F8E9", color="#7CB342"];
+
+    /* vertical pipeline */
+    DRAFT   -> CONTENT;
+    CONTENT -> RET;
+    PKG     -> RET;
+    CONTENT -> DEC;
+    RET     -> DEC;
+    DEC     -> UI;
+    RET     -> LLM;
+    DEC     -> LLM;
+    LLM     -> UI;
+
+    /* feedback loop */
+    UI      -> PKG;
+    PKG     -> TRAIN;
+    TRAIN   -> DEC;
+  }
+
+  /* ===================== Server (Federated Learning) ===================== */
+  subgraph cluster_server {
+    label="Server (Federated Learning)"; labelloc="t";
+    style="rounded,dashed"; color="#B0BEC5"; fontname="Helvetica";
+
+    SECAGG   [label="Secure Aggregation", fillcolor="#E3F2FD", color="#1E88E5"];
+    FEDAVG   [label="FedAvg\n(Global model update)", fillcolor="#E1F5FE", color="#0288D1"];
+    PRIVACC  [label="Privacy Accounting\n(ε,δ via Moments Accountant)", fillcolor="#EDE7F6", color="#5E35B1"];
+  }
+
+  /* cross-cluster FL edges */
+  TRAIN -> SECAGG [lhead=cluster_server];
+  SECAGG -> FEDAVG;
+  SECAGG -> PRIVACC;
+  FEDAVG -> DEC   [ltail=cluster_server, lhead=cluster_device];
+
+  /* ===================== Tiny legend ===================== */
+  legend [shape=note, fontsize=9,
+          label="Vertical Flow: Draft ↓ Analyze ↓ Retrieve ↓ Decide ↓ UI\nRAG: Retrieval facts + decision seeds → LLM explanation\nFL: Local DP-SGD → Secure Aggregation → FedAvg → back to device"];
+}

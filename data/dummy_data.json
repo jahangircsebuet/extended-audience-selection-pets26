@@ -1,0 +1,66 @@
+{
+  "posts": [
+    {
+      "post_id": 1,
+      "user": "user_1",
+      "content": "Happy birthday to me! Turning 25 today.",
+      "label": 1
+    },
+    {
+      "post_id": 2,
+      "user": "user_1",
+      "content": "Excited to start my new job at TechCorp in San Francisco.",
+      "label": 1
+    },
+    {
+      "post_id": 3,
+      "user": "user_2",
+      "content": "Great workout session at the gym this morning!",
+      "label": 0
+    },
+    {
+      "post_id": 4,
+      "user": "user_2",
+      "content": "Going to the political rally downtown later.",
+      "label": 1
+    },
+    {
+      "post_id": 5,
+      "user": "user_3",
+      "content": "Enjoying some delicious homemade food with family.",
+      "label": 0
+    }
+  ],
+  "friends": [
+    {
+      "user": "user_1",
+      "friend": "user_2",
+      "interactions": 15
+    },
+    {
+      "user": "user_1",
+      "friend": "user_3",
+      "interactions": 5
+    },
+    {
+      "user": "user_2",
+      "friend": "user_1",
+      "interactions": 15
+    },
+    {
+      "user": "user_2",
+      "friend": "user_3",
+      "interactions": 8
+    },
+    {
+      "user": "user_3",
+      "friend": "user_1",
+      "interactions": 5
+    },
+    {
+      "user": "user_3",
+      "friend": "user_2",
+      "interactions": 8
+    }
+  ]
+}
